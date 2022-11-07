@@ -24,4 +24,14 @@ jobs:
       run: rustup target add x86_64-pc-windows-gnu
     - name: Build
       run: cargo build --release --target x86_64-pc-windows-gnu
-    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: Hi
+        draft: false
+        prerelease: false
