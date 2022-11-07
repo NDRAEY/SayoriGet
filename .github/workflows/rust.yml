@@ -17,7 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install Packages
-      run: sudo apt list gcc*mingw* && sudo apt install gcc-mingw-w64 rustup
+      run: sudo apt list gcc*mingw* && sudo apt install gcc-mingw-w64 -y
+    - name: Check rustup
+      run: echo `which rustup`
     - name: Install New Rustup Target
       run: rustup target add x86_64-pc-windows-gnu
     - name: Build
