@@ -1,8 +1,11 @@
 mod gh_api;
+mod downloader;
 use crate::gh_api::gh_api::GitHubApi;
+use crate::downloader::download::progress;
 use std::io;
 use std::io::Write;
 use std::process;
+extern crate tokio;
 
 fn log(message: String) {
     println!("[LOG] {}", message);
@@ -16,8 +19,9 @@ fn error(message: String) {
     println!("[\x1b[31;1mERR\x1b[0m] {}", message);
 }
 
-fn main() {
-    println!("SayoriGet v1.0 by NDRAEY 2022");
+#[tokio::main]
+async fn main() {
+    println!("SayoriGet v1.0.2 by NDRAEY 2022");
 
     let sayori_original = GitHubApi {
         owner: "pimnik98".to_string(),
@@ -26,7 +30,7 @@ fn main() {
 
     let mut version: Option<String> = None;
 
-    let data = sayori_original.method("releases".to_string());
+    let data = sayori_original.method("releases".to_string()).await;
     match data {
         Ok(values) => {
             println!("\n{}", "=".repeat(40));
@@ -48,7 +52,7 @@ fn main() {
 
             if version == None {
                 // For future
-                println!("");
+                println!();
                 while selected > arraylen {
                     let mut tempstr = String::new();
                     print!("Select entry > ");
@@ -70,9 +74,9 @@ fn main() {
             let curobj = values[selected]["assets"].as_array().unwrap();
             //let mut found = false;
 
-            for j in 0..curobj.len() {
-                if curobj[j]["content_type"] == "application/x-cd-image" {
-                    url = Some(curobj[j]["browser_download_url"].as_str().unwrap());
+            for j in curobj {
+                if j["content_type"] == "application/x-cd-image" {
+                    url = Some(j["browser_download_url"].as_str().unwrap());
                     //found = true;
                     break;
                 }
@@ -87,6 +91,12 @@ fn main() {
             }
 
             println!("This url: {}", url.unwrap());
+
+            log(format!("Downloading -> {}", url.unwrap()));
+
+	        let future = progress(url.unwrap().to_string(),
+    	        		("SayoriOS ".to_string())+versions[selected]+".iso");
+    	    future.await;
         }
         Err(err) => {
             error(format!("Failed to parse JSON! ({})", err));

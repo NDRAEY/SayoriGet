@@ -8,7 +8,7 @@ pub struct GitHubApi {
 
 impl GitHubApi {
 	// https://api.github.com/repos/pimnik98/SayoriOS/releases
-	fn _method(&self, method: String) -> reqwest::Result<String> {
+	async fn _method(&self, method: String) -> reqwest::Result<String> {
 		/*
 		let request = reqwest::blocking::get(
 			"https://api.github.com/repos/".to_string()+
@@ -17,7 +17,7 @@ impl GitHubApi {
             &method
 		);
 		*/
-		let request = reqwest::blocking::Client::builder()
+		let request = reqwest::Client::builder()
 		.user_agent("Mozilla/5.0")
 		.build()?
 		.get(
@@ -25,12 +25,12 @@ impl GitHubApi {
             &self.owner+"/"+
             &self.repo+"/"+
             &method
-		).send();
+		).send().await;
 
         match request {
             Err(err) => Err(err),
             Ok(data) => {
-                match data.text() {
+                match data.text().await {
                     Err(e) => Err(e),
                     Ok(s) => Ok(s)
                 }
@@ -38,8 +38,8 @@ impl GitHubApi {
         }
 	}
 
-	pub fn method(&self, method: String) -> serde_json::Result<serde_json::Value> {
-		let data = self._method(method);
+	pub async fn method(&self, method: String) -> serde_json::Result<serde_json::Value> {
+		let data = self._method(method).await;
 
 		match data {
 			Ok(d) => {
