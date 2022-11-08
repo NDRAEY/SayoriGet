@@ -24,14 +24,16 @@ jobs:
       run: rustup target add x86_64-pc-windows-gnu
     - name: Build for Windows
       run: cargo build --release --target x86_64-pc-windows-gnu
+    - name: generate FOO unique variable based on timestamp
+      run: echo RANDOM_STR=$(date +%s) >> $GITHUB_ENV
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        # tag_name: T-${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ env.RANDOM_STR }}
+        release_name: Release ${{ env.RANDOM_STR }}
         body: Hi
         draft: false
         prerelease: false
