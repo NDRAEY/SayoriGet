@@ -1,12 +1,11 @@
 mod gh_api;
-mod downloader;
 use crate::gh_api::gh_api::GitHubApi;
-use crate::downloader::download::progress;
 use std::io;
 use std::io::Write;
 use std::process;
 extern crate tokio;
-
+extern crate ndraey_downloader;
+use crate::ndraey_downloader::progress;
 fn log(message: String) {
     println!("[LOG] {}", message);
 }

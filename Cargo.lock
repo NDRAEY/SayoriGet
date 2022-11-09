@@ -389,6 +389,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ndraey_downloader"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "62ad42a0157e558b801ffeb6678ea299dbdf95721af9e38053d3a300157e3fd8"
+dependencies = [
+ "futures-util",
+ "reqwest",
+]
+
+[[package]]
 name = "num_cpus"
 version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -581,6 +591,7 @@ name = "sayori_get"
 version = "1.0.2"
 dependencies = [
  "futures-util",
+ "ndraey_downloader",
  "reqwest",
  "serde_json",
  "tokio",
