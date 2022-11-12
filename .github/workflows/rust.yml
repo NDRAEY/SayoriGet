@@ -20,12 +20,17 @@ jobs:
       run: sudo apt list gcc*mingw* && sudo apt install gcc-mingw-w64 -y
     - name: Check rustup
       run: echo `which rustup`
-    - name: Install New Rustup Target
+    - name: Install New Rustup Target for Windows x86_64
       run: rustup target add x86_64-pc-windows-gnu
-    - name: Build for Windows
+    - name: Install New Rustup Target for Linux x86_64
+      run: rustup target add x86_64-unknown-linux-gnu
+    - name: Build for Windows x86
       run: cargo build --release --target x86_64-pc-windows-gnu
+    - name: Build for Linux x86
+      run: cargo build --release --target x86_64-unknown-linux-gnu
     - name: generate unique variable based on timestamp
       run: echo RANDOM_STR=$(date +%s) >> $GITHUB_ENV
+     
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -39,7 +44,7 @@ jobs:
         prerelease: false
     
     - name: Target Checkout
-      run: ls -lh target && ls -lh target/x86*/*
+      run: ls -lh target
 
     - name: Upload Release Asset
       id: upload-release-asset 
@@ -49,5 +54,16 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ./target/x86_64-pc-windows-gnu/release/sayori_get.exe
-        asset_name: SayoriGetx64.exe
+        asset_name: SayoriGet_x86_64_Windows.exe
+        asset_content_type: application/zip
+
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./target/x86_64-unknown-linux-gnu/release/sayori_get
+        asset_name: SayoriGet_x86_64_Linux
         asset_content_type: application/zip
