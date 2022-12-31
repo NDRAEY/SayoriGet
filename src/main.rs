@@ -74,7 +74,8 @@ async fn main() {
             //let mut found = false;
 
             for j in curobj {
-                if j["content_type"] == "application/x-cd-image" {
+            	// println!("Content type is: {}", j["content_type"]);
+                if j["name"].as_str().expect("Element not a string!!!").ends_with(".iso") {
                     url = Some(j["browser_download_url"].as_str().unwrap());
                     //found = true;
                     break;
@@ -85,6 +86,10 @@ async fn main() {
                 error(format!(
                     "No ISO images found for version: {}",
                     versions[selected]
+                ));
+                warn(format!(
+                	"{:#?}",
+                	curobj
                 ));
                 process::exit(1);
             }
